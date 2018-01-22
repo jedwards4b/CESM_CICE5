@@ -21,7 +21,7 @@
       module ice_therm_vertical
 
       use ice_kinds_mod
-      use ice_domain_size, only: ncat, nilyr, nslyr, max_ntrcr, max_blocks 
+      use ice_domain_size, only: ncat, nilyr, nslyr, max_ntrcr, max_blocks
       use ice_calendar, only: istep1
       use ice_constants
       use ice_fileunits, only: nu_diag
@@ -125,9 +125,9 @@
       real (kind=dbl_kind), dimension (nx_block,ny_block), &
          intent(in) :: &
          flw     , & ! incoming longwave radiation (W/m^2)
-         potT    , & ! air potential temperature  (K) 
-         Qa      , & ! specific humidity (kg/kg) 
-         rhoa    , & ! air density (kg/m^3) 
+         potT    , & ! air potential temperature  (K)
+         Qa      , & ! specific humidity (kg/kg)
+         rhoa    , & ! air density (kg/m^3)
          fsnow   , & ! snowfall rate (kg m-2 s-1)
          shcoef  , & ! transfer coefficient for sensible heat
          lhcoef      ! transfer coefficient for latent heat
@@ -154,15 +154,15 @@
 
       ! coupler fluxes to atmosphere
       real (kind=dbl_kind), dimension (nx_block,ny_block), intent(out):: &
-         flwoutn , & ! outgoing longwave radiation (W/m^2) 
-         evapn   , & ! evaporative water flux (kg/m^2/s) 
-         evapin   , & ! evaporative water flux (kg/m^2/s) 
-         evapsn       ! evaporative water flux (kg/m^2/s) 
+         flwoutn , & ! outgoing longwave radiation (W/m^2)
+         evapn   , & ! evaporative water flux (kg/m^2/s)
+         evapin   , & ! evaporative water flux (kg/m^2/s)
+         evapsn       ! evaporative water flux (kg/m^2/s)
 
       ! Note: these are intent out if calc_Tsfc = T, otherwise intent in
       real (kind=dbl_kind), dimension (nx_block,ny_block), intent(inout):: &
-         fsensn   , & ! sensible heat flux (W/m^2) 
-         flatn    , & ! latent heat flux   (W/m^2) 
+         fsensn   , & ! sensible heat flux (W/m^2)
+         flatn    , & ! latent heat flux   (W/m^2)
          fsurfn   , & ! net flux to top surface, excluding fcondtopn
          fcondtopn, & ! downward cond flux at top surface (W m-2)
          fcondbotn    ! downward cond flux at bottom surface (W m-2)
@@ -171,20 +171,20 @@
       real (kind=dbl_kind), dimension (nx_block,ny_block), intent(out):: &
          freshn  , & ! fresh water flux to ocean (kg/m^2/s)
          fsaltn  , & ! salt flux to ocean (kg/m^2/s)
-         fhocnn      ! net heat flux to ocean (W/m^2) 
+         fhocnn      ! net heat flux to ocean (W/m^2)
 
       ! diagnostic fields
       real (kind=dbl_kind), dimension(nx_block,ny_block), &
          intent(inout):: &
          Tsnic    , & ! snow ice interface temperature (deg C)
-         meltt    , & ! top ice melt             (m/step-->cm/day) 
-         melts    , & ! snow melt                (m/step-->cm/day) 
-         meltb    , & ! basal ice melt           (m/step-->cm/day) 
-         congel   , & ! basal ice growth         (m/step-->cm/day) 
-         snoice   , & ! snow-ice formation       (m/step-->cm/day) 
-         dsnow    , & ! change in snow thickness (m/step-->cm/day) 
-         mlt_onset, & ! day of year that sfc melting begins 
-         frz_onset    ! day of year that freezing begins (congel or frazil) 
+         meltt    , & ! top ice melt             (m/step-->cm/day)
+         melts    , & ! snow melt                (m/step-->cm/day)
+         meltb    , & ! basal ice melt           (m/step-->cm/day)
+         congel   , & ! basal ice growth         (m/step-->cm/day)
+         snoice   , & ! snow-ice formation       (m/step-->cm/day)
+         dsnow    , & ! change in snow thickness (m/step-->cm/day)
+         mlt_onset, & ! day of year that sfc melting begins
+         frz_onset    ! day of year that freezing begins (congel or frazil)
 
       real (kind=dbl_kind), intent(in) :: &
          yday      ! day of year
@@ -321,7 +321,7 @@
 
             call temperature_changes_salinity(nx_block,      ny_block, &
                                               my_task,       istep1,   &
-                                              dt,            icells,   & 
+                                              dt,            icells,   &
                                               indxi,         indxj,    &
                                               rhoa,          flw,      &
                                               potT,          Qa,       &
@@ -346,7 +346,7 @@
 
             call temperature_changes(nx_block,      ny_block, &
                                      my_task,       istep1,   &
-                                     dt,            icells,   & 
+                                     dt,            icells,   &
                                      indxi,         indxj,    &
                                      rhoa,          flw,      &
                                      potT,          Qa,       &
@@ -365,14 +365,14 @@
                                      istop,         jstop)
 
          endif ! ktherm
-            
+
       else
 
-         if (calc_Tsfc) then       
+         if (calc_Tsfc) then
 
             call zerolayer_temperature(nx_block,      ny_block, &
                                        my_task,       istep1,   &
-                                       dt,            icells,   & 
+                                       dt,            icells,   &
                                        indxi,         indxj,    &
                                        rhoa,          flw,      &
                                        potT,          Qa,       &
@@ -396,9 +396,9 @@
             do ij = 1, icells
                i = indxi(ij)
                j = indxj(ij)
-               fcondbotn(i,j)  = fcondtopn(i,j)   ! zero layer         
+               fcondbotn(i,j)  = fcondtopn(i,j)   ! zero layer
             enddo
-      
+
          endif      ! calc_Tsfc
 
       endif         ! heat_capacity
@@ -415,7 +415,7 @@
             enddo ! ij
 
       if (l_stop) return
- 
+
       ! Add snow-ice interface temperature diagnostic
 
       do ij = 1, icells
@@ -430,7 +430,7 @@
       ! Compute growth and/or melting at the top and bottom surfaces.
       ! Add new snowfall.
       ! Repartition ice into equal-thickness layers, conserving energy.
-      !----------------------------------------------------------------- 
+      !-----------------------------------------------------------------
 
          call thickness_changes(nx_block,     ny_block, &
                                 dt,                     &
@@ -497,17 +497,17 @@
       do ij = 1, icells
          i = indxi(ij)
          j = indxj(ij)
-            
+
          dhi = hin(ij) - worki(ij)
          dhs = hsn(ij) - works(ij) - hsn_new(ij)
-               
+
          freshn(i,j) = freshn(i,j) + &
                        evapn(i,j) - &
                        (rhoi*dhi + rhos*dhs) / dt
          fsaltn(i,j) = fsaltn(i,j) - &
                        rhoi*dhi*ice_ref_salinity*p001/dt
 
-         fhocnn(i,j) = fhocnn(i,j) + fadvocn(i,j) ! for ktherm=2 
+         fhocnn(i,j) = fhocnn(i,j) + fadvocn(i,j) ! for ktherm=2
 
          if (hin(ij) == c0) then
             if (tr_pond_topo) &
@@ -518,14 +518,14 @@
       enddo                     ! ij
 
       !-----------------------------------------------------------------
-      !  Given the vertical thermo state variables, compute the new ice 
+      !  Given the vertical thermo state variables, compute the new ice
       !   state variables.
       !-----------------------------------------------------------------
 
          call update_state_vthermo(nx_block,     ny_block,   &
                                    icells,                   &
                                    indxi,        indxj,      &
-                                   Tbot,         Tsf,        &     
+                                   Tbot,         Tsf,        &
                                    hin,          hsn,        &
                                    zqin,         zSin,       &
                                    zqsn,                     &
@@ -574,7 +574,7 @@
       ! Set l_brine to false for zero layer thermodynamics
       !-----------------------------------------------------------------
 
-      heat_capacity = .true.      
+      heat_capacity = .true.
       if (ktherm == 0) heat_capacity = .false. ! 0-layer thermodynamics
 
       l_brine = .false.
@@ -747,7 +747,7 @@
          ustar = max (ustar,ustar_min)
 
          if (trim(fbot_xfer_type) == 'Cdn_ocn') then
-            ! Note: Cdn_ocn has already been used for calculating ustar 
+            ! Note: Cdn_ocn has already been used for calculating ustar
             ! (formdrag only) --- David Schroeder (CPOM)
             cpchr = -cp_ocn*rhow*Cdn_ocn(i,j)
          else ! fbot_xfer_type == 'constant'
@@ -833,7 +833,7 @@
          i = indxi(ij)
          j = indxj(ij)
 
-         xtmp = frzmlt(i,j)/(fbot(i,j) + fside(ij) + puny) 
+         xtmp = frzmlt(i,j)/(fbot(i,j) + fside(ij) + puny)
          xtmp = min(xtmp, c1)
          fbot (i,j) = fbot (i,j) * xtmp
          rside(i,j) = rside(i,j) * xtmp
@@ -886,7 +886,7 @@
          aicen , & ! concentration of ice
          vicen , & ! volume per unit area of ice          (m)
          vsnon     ! volume per unit area of snow         (m)
- 
+
       real (kind=dbl_kind), dimension (nx_block,ny_block,max_ntrcr), &
          intent(in) :: &
          trcrn     ! tracer array
@@ -896,7 +896,7 @@
          hslyr       , & ! snow layer thickness
          Tsf         , & ! ice/snow surface temperature, Tsfcn
          einit           ! initial energy of melting (J m-2)
- 
+
       real (kind=dbl_kind), dimension(nx_block,ny_block), intent(in):: &
          Tbot            ! bottom ice temp  (C)
 
@@ -1001,7 +1001,7 @@
       !-----------------------------------------------------------------
 
             if (hslyr(ij) > hs_min/rnslyr .and. heat_capacity) then
-               ! zqsn < 0              
+               ! zqsn < 0
                zqsn(ij,k) = trcrn(i,j,nt_qsno+k-1)
                Tmax = -zqsn(ij,k)*puny*rnslyr / &
                        (rhos*cp_ice*vsnon(i,j))
@@ -1276,7 +1276,7 @@
 !cdir nodep      !NEC
 !ocl novrec      !Fujitsu
          do ij = 1, icells
-            einit(ij) = einit(ij) + hilyr(ij)*zqin(ij,k) 
+            einit(ij) = einit(ij) + hilyr(ij)*zqin(ij,k)
          enddo                  ! ij
 
       enddo                     ! nilyr
@@ -1295,7 +1295,7 @@
                                     dt,                  &
                                     yday,      icells,   &
                                     indxi,     indxj,    &
-                                    efinal,              & 
+                                    efinal,              &
                                     hin,       hilyr,    &
                                     hsn,       hslyr,    &
                                     zqin,      zqsn,     &
@@ -1307,7 +1307,7 @@
                                     evapin,    evapsn,   &
                                     meltt,     melts,    &
                                     meltb,     iage,     &
-                                    congel,    snoice,   &  
+                                    congel,    snoice,   &
                                     mlt_onset, frz_onset,&
                                     zSin,      sss,      &
                                     dsnow)
@@ -1387,7 +1387,7 @@
 
       real (kind=dbl_kind), dimension (nx_block,ny_block), &
          intent(in) :: &
-         sss             ! ocean salinity (PSU) 
+         sss             ! ocean salinity (PSU)
 
       ! local variables
 
@@ -1481,7 +1481,7 @@
       ! For l_brine = true, this should not be necessary.
       !-----------------------------------------------------------------
 
-      if (.not. l_brine) then 
+      if (.not. l_brine) then
 
          do k = 1, nslyr
 !DIR$ CONCURRENT !Cray
@@ -1528,7 +1528,7 @@
 
          wk1 = (fsurfn(i,j) - fcondtopn(i,j)) * dt
          etop_mlt(ij) = max(wk1, c0)           ! etop_mlt > 0
-         
+
          wk1 = (fcondbotn(i,j) - fbot(i,j)) * dt
          ebot_mlt(ij) = max(wk1, c0)           ! ebot_mlt > 0
          ebot_gro(ij) = min(wk1, c0)           ! ebot_gro < 0
@@ -1553,7 +1553,7 @@
             evapn(i,j) = evapn(i,j) + dhi*rhoi
             evapin(i,j) = evapin(i,j) + dhi*rhoi
             ! enthalpy of melt water
-            emlt_atm(ij) = emlt_atm(ij) - qmlt(ij,1) * dhi 
+            emlt_atm(ij) = emlt_atm(ij) - qmlt(ij,1) * dhi
          endif
 
          !--------------------------------------------------------------
@@ -1574,7 +1574,7 @@
 
          else
 
-            Tmlts = -zSin(ij,nilyr) * depressT 
+            Tmlts = -zSin(ij,nilyr) * depressT
 
             ! enthalpy of new ice growing at bottom surface
             if (heat_capacity) then
@@ -1629,7 +1629,7 @@
             j = indxj(ij)
 
          !--------------------------------------------------------------
-         ! Remove internal snow melt 
+         ! Remove internal snow melt
          !--------------------------------------------------------------
 
             if (ktherm == 2 .and. zqsn(ij,k) > -rhos * Lfresh) then
@@ -1691,12 +1691,12 @@
             esub(ij) = max(esub(ij), c0)
             evapn(i,j) = evapn(i,j) + dhi*rhoi
             evapin(i,j) = evapin(i,j) + dhi*rhoi
-            emlt_ocn(ij) = emlt_ocn(ij) - qmlt(ij,k) * dhi 
+            emlt_ocn(ij) = emlt_ocn(ij) - qmlt(ij,k) * dhi
 
          !--------------------------------------------------------------
          ! Melt ice (top)
          !--------------------------------------------------------------
-   
+
             if (qm(ij,k) < c0) then
                dhi = max(-dzi(ij,k), etop_mlt(ij)/qm(ij,k))
             else
@@ -1712,7 +1712,7 @@
             if (dhi < -puny .and. mlt_onset(i,j) < puny) &
                  mlt_onset(i,j) = yday
               meltt(i,j) = meltt(i,j) - dhi
-          
+
          enddo                  ! ij
       enddo                     ! nilyr
 
@@ -1739,7 +1739,7 @@
             dzi(ij,k) = dzi(ij,k) + dhi         ! zqin < 0, dhi < 0
             ebot_mlt(ij) = max(ebot_mlt(ij) - dhi*qm(ij,k), c0)
 
-            ! history diagnostics 
+            ! history diagnostics
             meltb(i,j) = meltb(i,j) -dhi
 
          enddo                  ! ij
@@ -1750,6 +1750,8 @@
 !cdir nodep      !NEC
 !ocl novrec      !Fujitsu
          do ij = 1, icells
+            i = indxi(ij)
+            j = indxj(ij)
 
          !--------------------------------------------------------------
          ! Melt snow (only if all the ice has melted)
@@ -1842,7 +1844,7 @@
             i = indxi(ij)
             j = indxj(ij)
             hsn(ij) = hsn(ij) + dzs(ij,k)
-            dsnow(i,j) = dsnow(i,j) + dzs(ij,k) - hslyr(ij)  
+            dsnow(i,j) = dsnow(i,j) + dzs(ij,k) - hslyr(ij)
          enddo                  ! ij
       enddo                     ! k
 
@@ -1872,7 +1874,7 @@
       !-----------------------------------------------------------------
 
       do ij = 1, icells
- 
+
          if (hin(ij) > c0) then
             hilyr(ij) = hin(ij) / real(nilyr,kind=dbl_kind)
          else
@@ -1893,7 +1895,7 @@
 
          zi1(ij,1) = c0
          zi1(ij,1+nilyr) = hin(ij)
- 
+
          zi2(ij,1) = c0
          zi2(ij,1+nilyr) = hin(ij)
 
@@ -1936,7 +1938,7 @@
             zqin(ij,1) = -rhoi * Lfresh
             zqsn(ij,1) = -rhos * Lfresh
          end do
-       
+
       endif
 
       if (nslyr > 1) then
@@ -2027,7 +2029,7 @@
       enddo                     ! k
 
       if (ktherm < 2) then
-         do ij = 1, icells 
+         do ij = 1, icells
            emlt_atm(ij) = c0
            emlt_ocn(ij) = c0
          enddo
@@ -2129,7 +2131,7 @@
          dhin(ij) = c0
          dhsn(ij) = c0
          hqs (ij) = c0
- 
+
          wk1 = hsn(ij) - hin(ij)*(rhow-rhoi)/rhos
 
          if (wk1 > puny .and. hsn(ij) > puny) then  ! snow below freeboard
@@ -2153,7 +2155,7 @@
             if (dhin(ij) > puny) then
                dhs = min(dhsn(ij), dzs(ij,k)) ! snow to remove from layer
                hsn(ij) = hsn(ij) - dhs
-               dsnow(i,j) = dsnow(i,j) -dhs   !new snow addition term 
+               dsnow(i,j) = dsnow(i,j) -dhs   !new snow addition term
                dzs(ij,k) = dzs(ij,k) - dhs
                dhsn(ij) = dhsn(ij) - dhs
                dhsn(ij) = max(dhsn(ij),c0)
@@ -2340,7 +2342,7 @@
          fcondtopn   , &
          fcondbotn   , &
          fadvocn     , &
-         fbot           
+         fbot
 
       real (kind=dbl_kind), dimension (icells), intent(in) :: &
          einit       , & ! initial energy of melting (J m-2)
@@ -2379,7 +2381,7 @@
       ! is the energy change in the system ice + vapor, and the latent
       ! heat lost by the ice is equal to that gained by the vapor.
       !-----------------------------------------------------------------
-       
+
          einp = (fsurfn(i,j) - flatn(i,j) + fswint(i,j) - fhocnn(i,j) &
                - fsnow(i,j)*Lfresh - fadvocn(i,j)) * dt
          ferr = abs(efinal(ij)-einit(ij)-einp) / dt
