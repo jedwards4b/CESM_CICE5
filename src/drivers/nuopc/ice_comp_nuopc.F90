@@ -78,6 +78,7 @@ module ice_comp_nuopc
   real(R8)               :: orb_obliq       ! attribute - obliquity in degrees
   real(R8)               :: orb_mvelp       ! attribute - moving vernal equinox longitude
   real(R8)               :: orb_eccen       ! attribute and update-  orbital eccentricity
+  integer                :: nthrds          ! number of openmp threads per mpi task
 
   character(len=*) , parameter :: orb_fixed_year       = 'fixed_year'
   character(len=*) , parameter :: orb_variable_year    = 'variable_year'
@@ -247,6 +248,7 @@ contains
     ! Local variables
     integer                 :: lmpicom
     integer                 :: localPet
+    integer                 :: localPeCount
     integer                 :: npes
     type(ESMF_DistGrid)     :: ice_distgrid
     type(ESMF_Mesh)         :: ice_mesh
@@ -285,10 +287,21 @@ contains
     ! generate local mpi comm
     !----------------------------------------------------------------------------
 
-    call ESMF_GridCompGet(gcomp, vm=vm, rc=rc)
+    call ESMF_GridCompGet(gcomp, vm=vm, localPet=localPet, rc=rc)
     if (ChkErr(rc,__LINE__,u_FILE_u)) return
-    call ESMF_VMGet(vm, mpiCommunicator=lmpicom, localPet=localPet, PetCount=npes, rc=rc)
+    call ESMF_VMGet(vm, mpiCommunicator=lmpicom, PetCount=npes, rc=rc)
     if (ChkErr(rc,__LINE__,u_FILE_u)) return
+    call ESMF_VMGet(vm, Pet=localPet, peCount=localPeCount, rc=rc)
+    if (ChkErr(rc,__LINE__,u_FILE_u)) return
+
+    if(localPeCount == 1) then
+       call NUOPC_CompAttributeGet(gcomp, "nthreads", value=cvalue, rc=rc)
+       if (ESMF_LogFoundError(rcToCheck=rc, msg=ESMF_LOGERR_PASSTHRU, line=__LINE__, file=u_FILE_u)) return
+       read(cvalue,*) nthrds
+    else
+       nthrds = localPeCount
+    endif
+!$  call omp_set_num_threads(nthrds)
 
     !----------------------------------------------------------------------------
     ! Initialize cice communicators
@@ -472,6 +485,10 @@ contains
     if (ChkErr(rc,__LINE__,u_FILE_u)) return
 
     call shr_file_setLogUnit (shrlogunit)
+
+    if (localPet==0) then
+       write(nu_diag,*) 'nthrds set to ',nthrds
+    endif
 
     !----------------------------------------------------------------------------
     ! Initialize cice1
@@ -721,6 +738,7 @@ contains
     call NUOPC_ModelGet(gcomp, modelClock=clock, importState=importState, exportState=exportState, rc=rc)
     if (ChkErr(rc,__LINE__,u_FILE_u)) return
 
+!$  call omp_set_num_threads(nthrds)
     !--------------------------------
     ! Determine time of next atmospheric shortwave calculation
     !--------------------------------
